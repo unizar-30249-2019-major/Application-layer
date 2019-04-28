@@ -1,0 +1,36 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.5.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation "org.springframework.boot:spring-boot-starter-cache"
+    compile("org.springframework.boot:spring-boot-starter-web")
+
+    compile('com.rabbitmq:amqp-client:3.4.1')    
+    compile('org.json:json:20090211')
+    compile ("com.github.ben-manes.caffeine:caffeine:2.6.2")
+
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
