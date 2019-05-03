@@ -1,6 +1,9 @@
 package com.major.aplicacion.messages;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.major.aplicacion.Session.SessionInfo;
+import com.major.aplicacion.dtos.BookingDtoReturn;
 import com.major.aplicacion.dtos.UserDto;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -10,12 +13,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 
 /**
  * Adapted from <https://github.com/UNIZAR-62227-TMDAD/messaging>
  *
  */
+//@Component
 public class MessageBroker {
 
 	private static final String REQUEST_QUEUE = "REQUESTS";
@@ -91,6 +96,11 @@ public class MessageBroker {
 		return new String(delivery.getBody()).split(";");
 	}
 
+
+	//
+	// --- Broker messages
+	//
+
 	public BrokerResponse login(String user, String password) throws IOException, InterruptedException {
 
 		String message = messageBuilder("login", new String[]{user, password});
@@ -99,10 +109,10 @@ public class MessageBroker {
 
 		String[] responseValues = response[1].split(",");
 
-		return new BrokerResponse(Integer.parseInt(response[0]), new SessionInfo(responseValues[0], UserDto.Rol.values()[Integer.parseInt(responseValues[1])], Long.parseLong(responseValues[2])));
+		return new BrokerResponse(Integer.parseInt(response[0]), new SessionInfo(responseValues[0], UserDto.Rol.valueOf(responseValues[1]), Long.parseLong(responseValues[2])));
 	}
 
-	//@Cacheable("tokenRolCache")
+
 	public UserDto.Rol getRol(String token) throws IOException, InterruptedException {
 		String message = messageBuilder("getRol", new String[]{token});
 
@@ -114,11 +124,46 @@ public class MessageBroker {
 	public BrokerResponse createNewUser(UserDto userDto) throws IOException, InterruptedException {
 
 		String message = messageBuilder("createNewUser",
-				new String[]{userDto.getFirstName(), userDto.getLastName(), userDto.getNameUser(),
-						userDto.getEmail(), userDto.getPassword(), userDto.getRol().toString()});
+				new String[]{new ObjectMapper().writeValueAsString(userDto)});
 
 		String[] response = publishAndGetResponse(message);
 
 		return new BrokerResponse(Integer.parseInt(response[0]), null);
+	}
+
+	public BrokerResponse fetchUserByID(long id) throws IOException, InterruptedException {
+		String message = messageBuilder("fetchUserByID", new String[]{Long.toString(id)});
+
+		String[] response = publishAndGetResponse(message);
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		return new BrokerResponse(Integer.parseInt(response[0]), mapper.readValue(response[1], UserDto.class));
+	}
+
+	public BrokerResponse deleteUserByID(long id) throws IOException, InterruptedException {
+		String message = messageBuilder("deleteUserByID", new String[]{Long.toString(id)});
+
+		String[] response = publishAndGetResponse(message);
+
+
+		return new BrokerResponse(Integer.parseInt(response[0]), null);
+	}
+
+	public BrokerResponse updateUserByID(long id, UserDto userDto) throws IOException, InterruptedException {
+		String message = messageBuilder("deleteUserByID", new String[]{Long.toString(id), new ObjectMapper().writeValueAsString(userDto)});
+
+		String[] response = publishAndGetResponse(message);
+
+
+		return new BrokerResponse(Integer.parseInt(response[0]), null);
+	}
+
+	public BrokerResponse fetchUserBookingsByID(long id) throws IOException, InterruptedException {
+		String message = messageBuilder("fetchUserBookingsByID", new String[]{Long.toString(id)});
+
+		String[] response = publishAndGetResponse(message);
+
+		return new BrokerResponse(Integer.parseInt(response[0]), new ObjectMapper().readValue(response[1], new TypeReference<List<BookingDtoReturn>>(){}));
 	}
 }

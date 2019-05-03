@@ -56,13 +56,16 @@ public class Receptor {
 			String retMessage = "";
 			switch(messageParts[1]) {
 				case "login":
-					retMessage = "200" + ";" + UUID.randomUUID().toString() + "," + new Random().nextInt(3) + "," + "154";
+					retMessage = "200" + ";" + UUID.randomUUID().toString() + "," + UserDto.Rol.values()[new Random().nextInt(3)] + "," + "154";
 					break;
 				case "getRol":
 					retMessage = "200" + ";" + 0;//new Random().nextInt(3);
 					break;
 				case "createNewUser":
 					retMessage = "201";
+					break;
+				case "fetchUserByID":
+					retMessage = "200" + ";" + "{\"id\": 15879,\"firstName\": \"Jorge\", \"lastName\": \"Rambla\", \"nameUser\": \"yorch\", \"email\": \"718911@unizar.es\"}";
 				default:
 					break;
 			}

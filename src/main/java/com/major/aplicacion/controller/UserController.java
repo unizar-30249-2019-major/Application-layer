@@ -34,6 +34,8 @@ public class UserController {
             userDto.setRol(UserDto.Rol.ESTUDIANTE);
         }
 
+
+        //TODO Change logic, take rol from cache
         if ((token != null && messageBroker.getRol(token) != UserDto.Rol.ADMIN) || // Request create user from not admin user logged
                 (token == null || messageBroker.getRol(token) != UserDto.Rol.ADMIN) && // not logged user or not admin user creates not student user
                         userDto.getRol() != UserDto.Rol.ESTUDIANTE) {
@@ -72,26 +74,54 @@ public class UserController {
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
-    public ResponseEntity getUserById(@PathVariable long id) {
+    public ResponseEntity getUserById(@CookieValue(value = "token", required = false) String token, @PathVariable long id) throws IOException, InterruptedException {
+        logger.info("GET\t/user/login request received");
 
-        return null;
+        //TODO Check ROL, if != ADMIN check if id is token[id] else 403
+
+        BrokerResponse response = messageBroker.fetchUserByID(id);
+
+        if(response.getStatus() == 200) {
+            return ResponseEntity.status(HttpStatus.OK).body(response.getBody());
+        }
+
+        return ResponseEntity.status(response.getStatus()).build();
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteUser(@PathVariable long id) {
+    public ResponseEntity deleteUser(@CookieValue(value = "token", required = false) String token, @PathVariable long id) throws IOException, InterruptedException {
+        logger.info("DELETE\t/user/login request received");
 
-        return null;
+        //TODO Check ROL, if != ADMIN check if id is token[id] else 403
+
+        BrokerResponse response = messageBroker.deleteUserByID(id);
+
+        return ResponseEntity.status(response.getStatus()).build();
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
-    public ResponseEntity updateUser(@PathVariable long id, @RequestBody UserDto userDto) {
+    public ResponseEntity updateUser(@CookieValue(value = "token", required = false) String token, @PathVariable long id, @RequestBody UserDto userDto) throws IOException, InterruptedException {
+        logger.info("PUT\t/user/login request received");
 
-        return null;
+        //TODO Check ROL, if != ADMIN check if id is token[id] else 403
+
+        BrokerResponse response = messageBroker.updateUserByID(id, userDto);
+
+        return ResponseEntity.status(response.getStatus()).build();
     }
 
     @RequestMapping(value = "/user/{id}/bookings", method = RequestMethod.GET)
-    public ResponseEntity getUserBookingsById(@PathVariable long id){
+    public ResponseEntity getUserBookingsById(@CookieValue(value = "token", required = false) String token, @PathVariable long id) throws IOException, InterruptedException {
+        logger.info("GET\t/user/{id}/bookings request received");
 
-        return null;
+        //TODO Check ROL, if != ADMIN check if id is token[id] else 403
+
+        BrokerResponse response = messageBroker.fetchUserBookingsByID(id);
+
+        if(response.getStatus() == 200) {
+            return ResponseEntity.status(HttpStatus.OK).body(response.getBody());
+        }
+
+        return ResponseEntity.status(response.getStatus()).build();
     }
 }
