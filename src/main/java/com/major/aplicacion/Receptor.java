@@ -49,21 +49,26 @@ public class Receptor {
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			String message = new String(delivery.getBody());
 			String[] messageParts = message.split(";");
-			System.out.println(" [x] Recibido '" + messageParts[1] + "' -- ID queue: " + messageParts[0]);
+			System.out.println(" [↓] Message received: \n\tResponse queue: " + messageParts[0] +
+					"\n\tFunction: " + messageParts[1] +
+					"\n\tArguments: " + (messageParts.length == 3 ? messageParts[2] : ""));
+
 			String retMessage = "";
 			switch(messageParts[1]) {
 				case "login":
-					retMessage = "200" + ";" + UUID.randomUUID().toString() + "-" + UUID.randomUUID().toString();
+					retMessage = "200" + ";" + UUID.randomUUID().toString() + "," + new Random().nextInt(3) + "," + "154";
 					break;
 				case "getRol":
-					retMessage = "200" + ";" + UserDto.Rol.values()[new Random().nextInt(3)];
+					retMessage = "200" + ";" + 0;//new Random().nextInt(3);
+					break;
+				case "createNewUser":
+					retMessage = "201";
 				default:
 					break;
 			}
-			Thread.sleep(1000L);
+
 			// Envio respuesta
-			System.out.println(" [x] Respondo " + " -- ID queue: " + retMessage);
-			channel.queueDeclare(messageParts[0], false, false, false, null);
+			System.out.println(" [↑] Response " + " -- ID queue: " + retMessage);
 			channel.basicPublish("", messageParts[0], null, retMessage.getBytes());
 
 		}
