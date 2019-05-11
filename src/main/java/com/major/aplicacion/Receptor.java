@@ -27,7 +27,7 @@ public class Receptor {
 	@SuppressWarnings("SpellCheckingInspection")
 	private static final String PASSWORD = "bitnami";
 
-	private static final String AMQP_URL = "amqp://localhost";
+	private static final String AMQP_URL = "amqp://192.168.1.43";
 
 	private static Logger logger = LoggerFactory.getLogger(MessageBroker.class);
 

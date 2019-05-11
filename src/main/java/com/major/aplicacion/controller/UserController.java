@@ -30,7 +30,7 @@ public class UserController {
 
         Optional sessionInfoOptional = Cache.getItem(token);
 
-        if(sessionInfoOptional.isEmpty()) { return false; }
+        if(!sessionInfoOptional.isPresent()) { return false; }
 
         UserDto.Rol rol = ((SessionInfo) sessionInfoOptional.get()).getRol();
         long id = ((SessionInfo) sessionInfoOptional.get()).getId();
@@ -52,7 +52,7 @@ public class UserController {
         Optional sessionInfoOptional = Cache.getItem(token);
 
         if((sessionInfoOptional.isPresent() && ((SessionInfo) sessionInfoOptional.get()).getRol() != UserDto.Rol.ADMIN) || // REQUEST from logged user rol != admin
-            (sessionInfoOptional.isEmpty() && userDto.getRol() != UserDto.Rol.ESTUDIANTE)) {
+            (!sessionInfoOptional.isPresent() && userDto.getRol() != UserDto.Rol.ESTUDIANTE)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -69,7 +69,7 @@ public class UserController {
     public ResponseEntity login(@RequestBody LoginDto loginDto) throws IOException, InterruptedException {
         logger.info("POST\t/user/login request received");
 
-        BrokerResponse response = messageBroker.login(loginDto.getUsername(), loginDto.getPassword());
+        BrokerResponse response = messageBroker.login(loginDto);
 
         if (response.getStatus() == 200) {
 
@@ -110,7 +110,7 @@ public class UserController {
         if(!checkPrivileges(token, id)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-
+        Cache.popById(id);
         BrokerResponse response = messageBroker.deleteUserByID(id);
 
         return ResponseEntity.status(response.getStatus()).build();

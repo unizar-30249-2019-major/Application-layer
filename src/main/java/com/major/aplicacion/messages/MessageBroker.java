@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.major.aplicacion.Cache;
 import com.major.aplicacion.Session.SessionInfo;
 import com.major.aplicacion.dtos.BookingDtoReturn;
+import com.major.aplicacion.dtos.LoginDto;
 import com.major.aplicacion.dtos.UserDto;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -93,15 +94,18 @@ public class MessageBroker {
 	// --- Broker messages
 	//
 
-	public BrokerResponse login(String user, String password) throws IOException, InterruptedException {
+	public BrokerResponse login(LoginDto loginDto) throws IOException, InterruptedException {
 
-		String message = messageBuilder("login", new String[]{user, password});
+		String message = messageBuilder("login", new String[]{new ObjectMapper().writeValueAsString(loginDto)});
 
 		String[] response = publishAndGetResponse(message);
 
 		String[] responseValues = response[1].split("::");
+		if(!response[0].equals("200")) {
+			return  new BrokerResponse(Integer.parseInt(response[0]), null);
+		}
 
-		Cache.addItem(new SessionInfo(responseValues[0], UserDto.Rol.valueOf(responseValues[1]), Long.parseLong(responseValues[2])));
+		Cache.push(new SessionInfo(responseValues[0], UserDto.Rol.valueOf(responseValues[1]), Long.parseLong(responseValues[2])));
 
 		return new BrokerResponse(Integer.parseInt(response[0]), new SessionInfo(responseValues[0], UserDto.Rol.valueOf(responseValues[1]), Long.parseLong(responseValues[2])));
 	}
