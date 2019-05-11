@@ -2,6 +2,7 @@ package com.major.aplicacion.messages;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.major.aplicacion.Cache;
 import com.major.aplicacion.Session.SessionInfo;
 import com.major.aplicacion.dtos.BookingDtoReturn;
 import com.major.aplicacion.dtos.UserDto;
@@ -11,6 +12,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,7 +22,7 @@ import java.util.List;
  * Adapted from <https://github.com/UNIZAR-62227-TMDAD/messaging>
  *
  */
-//@Component
+@Component
 public class MessageBroker {
 
 	private static final String REQUEST_QUEUE = "REQUESTS";
@@ -60,6 +62,7 @@ public class MessageBroker {
 		channel.queueDeclare(REQUEST_QUEUE, false, false, false, null);
 		channel.queueDeclare(RESPONSE_QUEUE, false, false, false, null);
 		consumer = new QueueingConsumer(channel);
+		channel.basicConsume(RESPONSE_QUEUE, true, consumer);
 
 	}
 
@@ -70,32 +73,21 @@ public class MessageBroker {
 		message.append(RESPONSE_QUEUE).append(SPLITTER);
 		message.append(operation);
 		if(args.length > 0) {
-			message.append(SPLITTER).append(arrayToStringComma(args));
+			message.append(SPLITTER).append(String.join("::", args));
 		}
 
 
 		return message.toString();
 	}
 
-	private String arrayToStringComma(String[] array) {
-		StringBuilder string = new StringBuilder();
-
-		for (String element : array) {
-			string.append(element).append(",");
-		}
-		return string.deleteCharAt(string.length() - 1).toString();
-	}
-
 	private String[] publishAndGetResponse(String message) throws IOException, InterruptedException {
 		channel.basicPublish("", REQUEST_QUEUE, null, message.getBytes());
 
 		// Wait for response
-		channel.basicConsume(RESPONSE_QUEUE, true, consumer);
 		QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 
 		return new String(delivery.getBody()).split(";");
 	}
-
 
 	//
 	// --- Broker messages
@@ -107,18 +99,11 @@ public class MessageBroker {
 
 		String[] response = publishAndGetResponse(message);
 
-		String[] responseValues = response[1].split(",");
+		String[] responseValues = response[1].split("::");
+
+		Cache.addItem(new SessionInfo(responseValues[0], UserDto.Rol.valueOf(responseValues[1]), Long.parseLong(responseValues[2])));
 
 		return new BrokerResponse(Integer.parseInt(response[0]), new SessionInfo(responseValues[0], UserDto.Rol.valueOf(responseValues[1]), Long.parseLong(responseValues[2])));
-	}
-
-
-	public UserDto.Rol getRol(String token) throws IOException, InterruptedException {
-		String message = messageBuilder("getRol", new String[]{token});
-
-		String[] response = publishAndGetResponse(message);
-
-		return UserDto.Rol.values()[Integer.parseInt(response[1])];
 	}
 
 	public BrokerResponse createNewUser(UserDto userDto) throws IOException, InterruptedException {
@@ -151,7 +136,7 @@ public class MessageBroker {
 	}
 
 	public BrokerResponse updateUserByID(long id, UserDto userDto) throws IOException, InterruptedException {
-		String message = messageBuilder("deleteUserByID", new String[]{Long.toString(id), new ObjectMapper().writeValueAsString(userDto)});
+		String message = messageBuilder("updateUserByID", new String[]{Long.toString(id), new ObjectMapper().writeValueAsString(userDto)});
 
 		String[] response = publishAndGetResponse(message);
 
@@ -165,5 +150,21 @@ public class MessageBroker {
 		String[] response = publishAndGetResponse(message);
 
 		return new BrokerResponse(Integer.parseInt(response[0]), new ObjectMapper().readValue(response[1], new TypeReference<List<BookingDtoReturn>>(){}));
+	}
+
+	public BrokerResponse getUserIDOfBooking(long id) throws IOException, InterruptedException {
+		String message = messageBuilder("getUserIDOfBooking", new String[]{Long.toString(id)});
+
+		String[] response = publishAndGetResponse(message);
+
+		return new BrokerResponse(Integer.parseInt(response[0]), Long.parseLong(response[1]));
+	}
+
+	public BrokerResponse getBookingById(long id) throws IOException, InterruptedException {
+		String message = messageBuilder("getBookingById", new String[]{Long.toString(id)});
+
+		String[] response = publishAndGetResponse(message);
+
+		return new BrokerResponse(Integer.parseInt(response[0]), new ObjectMapper().readValue(response[1], BookingDtoReturn.class));
 	}
 }
