@@ -1,6 +1,6 @@
 package com.major.aplicacion.controller;
 
-import com.major.aplicacion.Cache;
+import com.major.aplicacion.Session.Cache;
 import com.major.aplicacion.Session.SessionInfo;
 import com.major.aplicacion.dtos.LoginDto;
 import com.major.aplicacion.dtos.UserDto;

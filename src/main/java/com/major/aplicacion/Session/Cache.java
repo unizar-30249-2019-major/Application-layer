@@ -1,6 +1,5 @@
-package com.major.aplicacion;
+package com.major.aplicacion.Session;
 
-import com.major.aplicacion.Session.SessionInfo;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
