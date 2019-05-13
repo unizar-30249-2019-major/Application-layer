@@ -2,6 +2,7 @@ package com.major.aplicacion.dtos;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class BookingDtoReturn {
     private long id;
@@ -10,7 +11,7 @@ public class BookingDtoReturn {
 
     private String reason;
 
-    private Collection<Period> period;
+    private List<Period> period;
 
     private String state;
 
@@ -20,6 +21,7 @@ public class BookingDtoReturn {
 
     private Date finalDate;
 
+    private List<Integer> spaces;
 
     public long getId() {
         return id;
@@ -49,7 +51,7 @@ public class BookingDtoReturn {
         return period;
     }
 
-    public void setPeriod(Collection<Period> period) {
+    public void setPeriod(List<Period> period) {
         this.period=period;
     }
 
@@ -83,5 +85,13 @@ public class BookingDtoReturn {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public List<Integer> getSpaces() {
+        return spaces;
+    }
+
+    public void setSpaces(List<Integer> spaces) {
+        this.spaces = spaces;
     }
 }
