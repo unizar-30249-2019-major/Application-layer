@@ -216,7 +216,7 @@ public class BookingController {
     }
 
     @RequestMapping(value = "/booking/csv", method = RequestMethod.POST)
-    public ResponseEntity createCSVBooking(@CookieValue(value = "token", required = false) String token, @RequestParam("file") MultipartFile csv) {
+    public ResponseEntity createCSVBooking(@CookieValue(value = "token", required = false) String token, @RequestParam("file") MultipartFile csv) throws IOException {
         logger.info("POST\t/booking/csv request received");
 
         if (token == null || !isAdmin(token)) {
@@ -234,7 +234,7 @@ public class BookingController {
             InputStream is = csv.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             while ((line = br.readLine()) != null) {
-                logger.info(line);
+                //logger.info(line);
                 count++;
                 columns = line.split(";");
 
@@ -263,6 +263,8 @@ public class BookingController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.toArray());
         }
 
-        return ResponseEntity.status(200).body(csv.getName());
+        BrokerResponse response = messageBroker.processCSV(getSessionUserID(token), entries);
+
+        return ResponseEntity.status(response.getStatus()).build();
     }
 }

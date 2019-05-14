@@ -1,14 +1,10 @@
 package com.major.aplicacion.messages;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.major.aplicacion.Session.Cache;
 import com.major.aplicacion.Session.SessionInfo;
-import com.major.aplicacion.dtos.BookingDto;
-import com.major.aplicacion.dtos.BookingDtoReturn;
-import com.major.aplicacion.dtos.LoginDto;
-import com.major.aplicacion.dtos.UserDto;
+import com.major.aplicacion.dtos.*;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -19,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -243,5 +240,19 @@ public class MessageBroker {
         String[] response = publishAndGetResponse(message);
 
         return new BrokerResponse(Integer.parseInt(response[0]), null);
+    }
+
+    public BrokerResponse processCSV(long id, Map<Integer, Bookingcsv> entries) throws IOException {
+        int status = 200;
+        for(Map.Entry<Integer, Bookingcsv> entry : entries.entrySet()) {
+            Bookingcsv value = entry.getValue();
+            String message = messageBuilder("createCSVBooking", new String[]{Long.toString(id), new ObjectMapper().writeValueAsString(value)});
+            String[] response = publishAndGetResponse(message);
+            if(status != Integer.parseInt(response[0])) {
+                status = Integer.parseInt(response[0]);
+                break;
+            }
+        }
+        return new BrokerResponse(status, null);
     }
 }
