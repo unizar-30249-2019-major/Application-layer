@@ -255,4 +255,50 @@ public class MessageBroker {
         }
         return new BrokerResponse(status, null);
     }
+
+    public BrokerResponse fetchAllSpaces() throws IOException {
+        String message = messageBuilder("fetchAllSpaces", new String[]{});
+
+        String[] response = publishAndGetResponse(message);
+
+        if(Integer.parseInt(response[0]) == 200) {
+            return new BrokerResponse(Integer.parseInt(response[0]), new ObjectMapper().readValue(response[1], new TypeReference<List<SpaceDto>>() {
+            }));
+        }
+
+        return new BrokerResponse(Integer.parseInt(response[0]), null);
+    }
+
+    public BrokerResponse fetchSpaceByID(long id) throws IOException{
+        String message = messageBuilder("fetchSpaceByID", new String[]{Long.toString(id)});
+
+        String[] response = publishAndGetResponse(message);
+
+        if(Integer.parseInt(response[0]) == 200) {
+            return new BrokerResponse(Integer.parseInt(response[0]), new ObjectMapper().readValue(response[1], SpaceDto.class));
+        }
+
+        return new BrokerResponse(Integer.parseInt(response[0]), null);
+    }
+
+    public BrokerResponse putSpaceByID(long id, SpaceInfoDto spaceInfoDto) throws IOException{
+        String message = messageBuilder("putSpaceByID", new String[]{Long.toString(id), new ObjectMapper().writeValueAsString(spaceInfoDto)});
+
+        String[] response = publishAndGetResponse(message);
+
+        return new BrokerResponse(Integer.parseInt(response[0]), null);
+    }
+
+    public BrokerResponse fetchSpaceBookingsByID(long id) throws IOException{
+        String message = messageBuilder("fetchSpaceBookingsByID", new String[]{Long.toString(id)});
+
+        String[] response = publishAndGetResponse(message);
+
+        if(Integer.parseInt(response[0]) == 200) {
+            return new BrokerResponse(Integer.parseInt(response[0]), new ObjectMapper().readValue(response[1], new TypeReference<List<BookingDtoReturn>>() {
+            }));
+        }
+
+        return new BrokerResponse(Integer.parseInt(response[0]), null);
+    }
 }

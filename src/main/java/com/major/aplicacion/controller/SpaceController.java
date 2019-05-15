@@ -4,6 +4,7 @@ import com.major.aplicacion.Session.Cache;
 import com.major.aplicacion.Session.SessionInfo;
 import com.major.aplicacion.dtos.SpaceInfoDto;
 import com.major.aplicacion.dtos.UserDto;
+import com.major.aplicacion.messages.BrokerResponse;
 import com.major.aplicacion.messages.MessageBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import java.io.IOException;
 @RestController
 public class SpaceController {
 
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
     @Autowired
     private MessageBroker messageBroker;
 
@@ -33,9 +35,14 @@ public class SpaceController {
         if (token == null || !Cache.containsToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        // TODO
 
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        BrokerResponse response = messageBroker.fetchAllSpaces();
+
+        if(response.getStatus() == 200) {
+            return ResponseEntity.status(response.getStatus()).body(response.getBody());
+        }
+
+        return ResponseEntity.status(response.getStatus()).build();
     }
 
     @RequestMapping(value = "/space/{id}", method = RequestMethod.GET)
@@ -45,9 +52,14 @@ public class SpaceController {
         if (token == null || !Cache.containsToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        // TODO
 
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        BrokerResponse response = messageBroker.fetchSpaceByID(id);
+
+        if(response.getStatus() == 200) {
+            return ResponseEntity.status(response.getStatus()).body(response.getBody());
+        }
+
+        return ResponseEntity.status(response.getStatus()).build();
     }
 
     @RequestMapping(value = "/space/{id}", method = RequestMethod.PUT)
@@ -58,9 +70,9 @@ public class SpaceController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // TODO
+        BrokerResponse response = messageBroker.putSpaceByID(id, spaceInfoDto);
 
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.status(response.getStatus()).build();
     }
 
     @RequestMapping(value = "/space/{id}/bookings", method = RequestMethod.GET)
@@ -71,9 +83,14 @@ public class SpaceController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // TODO
+        BrokerResponse response = messageBroker.fetchSpaceBookingsByID(id);
 
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        if(response.getStatus() == 200) {
+            return ResponseEntity.status(response.getStatus()).body(response.getBody());
+        }
+
+        return ResponseEntity.status(response.getStatus()).build();
+
     }
 
 }
