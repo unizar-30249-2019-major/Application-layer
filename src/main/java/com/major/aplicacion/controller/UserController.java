@@ -66,7 +66,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/user/login", method = RequestMethod.POST)
-    public ResponseEntity login(@RequestBody LoginDto loginDto) throws IOException, InterruptedException {
+    public ResponseEntity login(@RequestBody LoginDto loginDto) throws IOException {
         logger.info("POST\t/user/login request received");
 
         BrokerResponse response = messageBroker.login(loginDto);
