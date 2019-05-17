@@ -31,8 +31,8 @@ public class BookingController {
         return token != null && Cache.getItem(token).isPresent() && ((SessionInfo) Cache.getItem(token).get()).getRol() == UserDto.Rol.ESTUDIANTE;
     }
 
-    private Boolean isPas(String token) {
-        return token != null && Cache.getItem(token).isPresent() && ((SessionInfo) Cache.getItem(token).get()).getRol() == UserDto.Rol.PAS;
+    private Boolean isPdi(String token) {
+        return token != null && Cache.getItem(token).isPresent() && ((SessionInfo) Cache.getItem(token).get()).getRol() == UserDto.Rol.PDI;
     }
 
     private Boolean isAdmin(String token) {

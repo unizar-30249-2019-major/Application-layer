@@ -8,7 +8,7 @@ import java.util.List;
 public class UserDto {
 
     public enum Rol {
-        ESTUDIANTE, PAS, ADMIN
+        ESTUDIANTE, PDI, ADMIN
     }
 
     private long id;
@@ -56,8 +56,8 @@ public class UserDto {
             case "admin":
                 this.rol = Rol.ADMIN;
                 break;
-            case "pas":
-                this.rol = Rol.PAS;
+            case "pdi":
+                this.rol = Rol.PDI;
                 break;
         }
     }
