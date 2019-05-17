@@ -29,14 +29,14 @@ public class SpaceController {
     }
 
     @RequestMapping(value = "/spaces", method = RequestMethod.GET)
-    public ResponseEntity getAllSpaces(@CookieValue(value = "token", required = false) String token) throws IOException {
+    public ResponseEntity getAllSpaces(@CookieValue(value = "token", required = false) String token, @RequestParam(defaultValue = "0") int minChairs, @RequestParam(defaultValue = "0") double minSpace) throws IOException {
         logger.info("GET\t/spaces request received");
 
         if (token == null || !Cache.containsToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        BrokerResponse response = messageBroker.fetchAllSpaces();
+        BrokerResponse response = messageBroker.fetchAllSpaces(minChairs, minSpace);
 
         if(response.getStatus() == 200) {
             return ResponseEntity.status(response.getStatus()).body(response.getBody());
@@ -91,6 +91,22 @@ public class SpaceController {
 
         return ResponseEntity.status(response.getStatus()).build();
 
+    }
+
+    @RequestMapping(value = "/space/coords/{floor}/{X}/{Y}", method = RequestMethod.GET)
+    public ResponseEntity getSpaceByCoords(@CookieValue(value = "token", required = false) String token, @PathVariable double X, @PathVariable double Y, @PathVariable int floor) throws IOException {
+        logger.info("GET\t/space/coords/{floor}/{X}/{Y} request received");
+        if (token == null || !Cache.containsToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        BrokerResponse response = messageBroker.fetchSpaceBookingsByCoords(floor, X, Y);
+
+        if(response.getStatus() == 200) {
+            return ResponseEntity.status(response.getStatus()).body(response.getBody());
+        }
+
+        return ResponseEntity.status(response.getStatus()).build();
     }
 
 }

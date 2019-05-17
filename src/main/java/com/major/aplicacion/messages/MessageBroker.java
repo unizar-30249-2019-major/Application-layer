@@ -256,8 +256,8 @@ public class MessageBroker {
         return new BrokerResponse(status, null);
     }
 
-    public BrokerResponse fetchAllSpaces() throws IOException {
-        String message = messageBuilder("fetchAllSpaces", new String[]{});
+    public BrokerResponse fetchAllSpaces(int minChairs, double minSpace) throws IOException {
+        String message = messageBuilder("fetchAllSpaces", new String[]{Integer.toString(minChairs), Double.toString(minSpace)});
 
         String[] response = publishAndGetResponse(message);
 
@@ -297,6 +297,18 @@ public class MessageBroker {
         if(Integer.parseInt(response[0]) == 200) {
             return new BrokerResponse(Integer.parseInt(response[0]), new ObjectMapper().readValue(response[1], new TypeReference<List<BookingDtoReturn>>() {
             }));
+        }
+
+        return new BrokerResponse(Integer.parseInt(response[0]), null);
+    }
+
+    public BrokerResponse fetchSpaceBookingsByCoords(int floor, double X, double Y) throws IOException {
+        String message = messageBuilder("fetchSpaceBookingsByCoords", new String[]{Integer.toString(floor), Double.toString(X), Double.toString(Y)});
+
+        String[] response = publishAndGetResponse(message);
+
+        if(Integer.parseInt(response[0]) == 200) {
+            return new BrokerResponse(Integer.parseInt(response[0]), new ObjectMapper().readValue(response[1], SpaceDto.class));
         }
 
         return new BrokerResponse(Integer.parseInt(response[0]), null);
