@@ -20,10 +20,9 @@ public class BookingDto {
 
     private Date finalDate;
 
-    private boolean Especial;
+    private boolean especial;
 
     private List<Integer> spaces;
-
 
 
     public long getId() {
@@ -75,11 +74,11 @@ public class BookingDto {
     }
 
     public boolean isEspecial() {
-        return Especial;
+        return especial;
     }
 
     public void setEspecial(boolean especial) {
-        Especial = especial;
+        especial = especial;
     }
 
     public List<Integer> getSpaces() {
