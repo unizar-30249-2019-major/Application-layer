@@ -313,4 +313,17 @@ public class MessageBroker {
 
         return new BrokerResponse(Integer.parseInt(response[0]), null);
     }
+
+    public BrokerResponse fetchSpaceCalendar(long id) throws IOException{
+        String message = messageBuilder("fetchSpaceCalendar", new String[]{Long.toString(id)});
+
+        String[] response = publishAndGetResponse(message);
+
+        if(Integer.parseInt(response[0]) == 200) {
+            return new BrokerResponse(Integer.parseInt(response[0]), new ObjectMapper().readValue(response[1], new TypeReference<List<SpaceHorarioDto>>() {
+            }));
+        }
+
+        return new BrokerResponse(Integer.parseInt(response[0]), null);
+    }
 }

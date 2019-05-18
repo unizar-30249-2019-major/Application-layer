@@ -109,4 +109,21 @@ public class SpaceController {
         return ResponseEntity.status(response.getStatus()).build();
     }
 
+    @RequestMapping(value = "/space/{id}/calendar", method = RequestMethod.GET)
+    public ResponseEntity getCalendarSpace(@CookieValue(value = "token", required = false) String token, @PathVariable long id) throws IOException {
+        logger.info("GET\t/space/{id}/calendar request received");
+
+        if (token == null || !Cache.containsToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        BrokerResponse response = messageBroker.fetchSpaceCalendar(id);
+
+        if(response.getStatus() == 200) {
+            return ResponseEntity.status(response.getStatus()).body(response.getBody());
+        }
+
+        return ResponseEntity.status(response.getStatus()).build();
+    }
+
 }

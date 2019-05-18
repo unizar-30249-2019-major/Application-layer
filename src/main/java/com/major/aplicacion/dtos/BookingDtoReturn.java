@@ -21,6 +21,8 @@ public class BookingDtoReturn {
 
     private Date finalDate;
 
+    private boolean especial;
+
     private List<Integer> spaces;
 
     public long getId() {
@@ -93,5 +95,13 @@ public class BookingDtoReturn {
 
     public void setSpaces(List<Integer> spaces) {
         this.spaces = spaces;
+    }
+
+    public boolean isEspecial() {
+        return especial;
+    }
+
+    public void setEspecial(boolean especial) {
+        especial = especial;
     }
 }
