@@ -87,7 +87,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/user/login", method = RequestMethod.DELETE)
-    public ResponseEntity logout(@CookieValue(value = "token", required = false) String token) {
+    public ResponseEntity logout(@CookieValue(value = "token") String token) {
         logger.info("DELETE\t/user/login request received");
 
         Cache.pop(token);

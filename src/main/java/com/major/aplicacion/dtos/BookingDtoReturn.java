@@ -102,6 +102,6 @@ public class BookingDtoReturn {
     }
 
     public void setEspecial(boolean especial) {
-        especial = especial;
+        this.especial = especial;
     }
 }
