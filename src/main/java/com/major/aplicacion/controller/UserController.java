@@ -80,10 +80,19 @@ public class UserController {
                     .path("/")
                     .build();
             return ResponseEntity.status(HttpStatus.OK)
-                    .header(HttpHeaders.SET_COOKIE, cookie.toString()).body(responseBody.getRol());
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString()).body("{\n\t\"id\": " + responseBody.getId() + ",\n\t\"rol\": \"" + responseBody.getRol() + "\"\n}");
         } else {
             return ResponseEntity.status(response.getStatus()).build();
         }
+    }
+
+    @RequestMapping(value = "/user/login", method = RequestMethod.DELETE)
+    public ResponseEntity logout(@CookieValue(value = "token", required = false) String token) {
+        logger.info("DELETE\t/user/login request received");
+
+        Cache.pop(token);
+
+        return ResponseEntity.status(201).build();
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
@@ -121,6 +130,20 @@ public class UserController {
         logger.info("PUT\t/user/{id} request received");
 
         if(!checkPrivileges(token, id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        if (userDto.getRol() == null) {
+            userDto.setRol(UserDto.Rol.ESTUDIANTE);
+        }
+
+        List<String> errors = userDto.checkErrorsNew();
+        if (errors.size() != 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.toArray());
+        }
+
+        UserDto.Rol rol = ((SessionInfo) Cache.getItem(token).get()).getRol();
+        if(rol != UserDto.Rol.ADMIN  && userDto.getRol() != rol) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
