@@ -108,15 +108,15 @@ public class MessageBroker {
             return new BrokerResponse(Integer.parseInt(response[0]), null);
         }
 
-        Cache.push(new SessionInfo(responseValues[0], UserDto.Rol.valueOf(responseValues[1]), Long.parseLong(responseValues[2])));
+        Cache.push(new SessionInfo(responseValues[0], PersonaEinaDto.Rol.valueOf(responseValues[1]), Long.parseLong(responseValues[2])));
 
-        return new BrokerResponse(Integer.parseInt(response[0]), new SessionInfo(responseValues[0], UserDto.Rol.valueOf(responseValues[1]), Long.parseLong(responseValues[2])));
+        return new BrokerResponse(Integer.parseInt(response[0]), new SessionInfo(responseValues[0], PersonaEinaDto.Rol.valueOf(responseValues[1]), Long.parseLong(responseValues[2])));
     }
 
-    public BrokerResponse createNewUser(UserDto userDto) throws IOException {
+    public BrokerResponse createNewUser(PersonaEinaDto personaEinaDto) throws IOException {
 
         String message = messageBuilder("createNewUser",
-                new String[]{new ObjectMapper().writeValueAsString(userDto)});
+                new String[]{new ObjectMapper().writeValueAsString(personaEinaDto)});
 
         String[] response = publishAndGetResponse(message);
 
@@ -130,7 +130,7 @@ public class MessageBroker {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        return new BrokerResponse(Integer.parseInt(response[0]), mapper.readValue(response[1], UserDto.class));
+        return new BrokerResponse(Integer.parseInt(response[0]), mapper.readValue(response[1], PersonaEinaDto.class));
     }
 
     public BrokerResponse deleteUserByID(long id) {
@@ -142,8 +142,8 @@ public class MessageBroker {
         return new BrokerResponse(Integer.parseInt(response[0]), null);
     }
 
-    public BrokerResponse updateUserByID(long id, UserDto userDto) throws IOException {
-        String message = messageBuilder("updateUserByID", new String[]{Long.toString(id), new ObjectMapper().writeValueAsString(userDto)});
+    public BrokerResponse updateUserByID(long id, PersonaEinaDto personaEinaDto) throws IOException {
+        String message = messageBuilder("updateUserByID", new String[]{Long.toString(id), new ObjectMapper().writeValueAsString(personaEinaDto)});
 
         String[] response = publishAndGetResponse(message);
 
@@ -242,10 +242,10 @@ public class MessageBroker {
         return new BrokerResponse(Integer.parseInt(response[0]), null);
     }
 
-    public BrokerResponse processCSV(long id, Map<Integer, Bookingcsv> entries) throws IOException {
+    public BrokerResponse processCSV(long id, Map<Integer, BookingCsv> entries) throws IOException {
         int status = 200;
-        for(Map.Entry<Integer, Bookingcsv> entry : entries.entrySet()) {
-            Bookingcsv value = entry.getValue();
+        for(Map.Entry<Integer, BookingCsv> entry : entries.entrySet()) {
+            BookingCsv value = entry.getValue();
             String message = messageBuilder("createCSVBooking", new String[]{Long.toString(id), new ObjectMapper().writeValueAsString(value)});
             String[] response = publishAndGetResponse(message);
             if(status != Integer.parseInt(response[0])) {
@@ -320,7 +320,7 @@ public class MessageBroker {
         String[] response = publishAndGetResponse(message);
 
         if(Integer.parseInt(response[0]) == 200) {
-            return new BrokerResponse(Integer.parseInt(response[0]), new ObjectMapper().readValue(response[1], new TypeReference<List<SpaceHorarioDto>>() {
+            return new BrokerResponse(Integer.parseInt(response[0]), new ObjectMapper().readValue(response[1], new TypeReference<List<SpaceTimetableDto>>() {
             }));
         }
 

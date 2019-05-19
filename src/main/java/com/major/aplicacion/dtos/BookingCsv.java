@@ -3,17 +3,17 @@ package com.major.aplicacion.dtos;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Bookingcsv {
+public class BookingCsv {
     private String reason;
     private List<Period> periods;
     private List<Integer> spaces;
 
-    public Bookingcsv() {
+    public BookingCsv() {
         this.spaces = new ArrayList<>();
         this.periods = new ArrayList<>();
     }
 
-    public Bookingcsv(String reason) {
+    public BookingCsv(String reason) {
         this.reason = reason;
         this.periods = new ArrayList<>();
         this.spaces = new ArrayList<>();

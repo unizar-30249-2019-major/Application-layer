@@ -3,7 +3,7 @@ package com.major.aplicacion.controller;
 import com.major.aplicacion.Session.Cache;
 import com.major.aplicacion.Session.SessionInfo;
 import com.major.aplicacion.dtos.LoginDto;
-import com.major.aplicacion.dtos.UserDto;
+import com.major.aplicacion.dtos.PersonaEinaDto;
 import com.major.aplicacion.messages.BrokerResponse;
 import com.major.aplicacion.messages.MessageBroker;
 import org.slf4j.Logger;
@@ -32,27 +32,27 @@ public class UserController {
 
         if(!sessionInfoOptional.isPresent()) { return false; }
 
-        UserDto.Rol rol = ((SessionInfo) sessionInfoOptional.get()).getRol();
+        PersonaEinaDto.Rol rol = ((SessionInfo) sessionInfoOptional.get()).getRol();
         long id = ((SessionInfo) sessionInfoOptional.get()).getId();
 
 
-        return rol == UserDto.Rol.ADMIN || id == id_request;
+        return rol == PersonaEinaDto.Rol.ADMIN || id == id_request;
     }
 
     @RequestMapping(value = "/user", method = RequestMethod.POST)
-    public ResponseEntity createUser(@CookieValue(value = "token", required = false) String token, @RequestBody UserDto userDto) throws IOException, InterruptedException {
+    public ResponseEntity createUser(@CookieValue(value = "token", required = false) String token, @RequestBody PersonaEinaDto personaEinaDto) throws IOException, InterruptedException {
         logger.info("POST\t/user request received");
 
-        List<String> errors = userDto.checkErrorsNew();
+        List<String> errors = personaEinaDto.checkErrorsNew();
 
-        if (userDto.getRol() == null) {
-            userDto.setRol(UserDto.Rol.ESTUDIANTE);
+        if (personaEinaDto.getRol() == null) {
+            personaEinaDto.setRol(PersonaEinaDto.Rol.ESTUDIANTE);
         }
 
         Optional sessionInfoOptional = Cache.getItem(token);
 
-        if((sessionInfoOptional.isPresent() && ((SessionInfo) sessionInfoOptional.get()).getRol() != UserDto.Rol.ADMIN) || // REQUEST from logged user rol != admin
-            (!sessionInfoOptional.isPresent() && userDto.getRol() != UserDto.Rol.ESTUDIANTE)) {
+        if((sessionInfoOptional.isPresent() && ((SessionInfo) sessionInfoOptional.get()).getRol() != PersonaEinaDto.Rol.ADMIN) || // REQUEST from logged user rol != admin
+            (!sessionInfoOptional.isPresent() && personaEinaDto.getRol() != PersonaEinaDto.Rol.ESTUDIANTE)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -60,7 +60,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.toArray());
         }
 
-        BrokerResponse response = messageBroker.createNewUser(userDto);
+        BrokerResponse response = messageBroker.createNewUser(personaEinaDto);
 
         return ResponseEntity.status(response.getStatus()).build();
     }
@@ -126,28 +126,28 @@ public class UserController {
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
-    public ResponseEntity updateUser(@CookieValue(value = "token", required = false) String token, @PathVariable long id, @RequestBody UserDto userDto) throws IOException, InterruptedException {
+    public ResponseEntity updateUser(@CookieValue(value = "token", required = false) String token, @PathVariable long id, @RequestBody PersonaEinaDto personaEinaDto) throws IOException, InterruptedException {
         logger.info("PUT\t/user/{id} request received");
 
         if(!checkPrivileges(token, id)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        if (userDto.getRol() == null) {
-            userDto.setRol(UserDto.Rol.ESTUDIANTE);
+        if (personaEinaDto.getRol() == null) {
+            personaEinaDto.setRol(PersonaEinaDto.Rol.ESTUDIANTE);
         }
 
-        List<String> errors = userDto.checkErrorsNew();
+        List<String> errors = personaEinaDto.checkErrorsNew();
         if (errors.size() != 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.toArray());
         }
 
-        UserDto.Rol rol = ((SessionInfo) Cache.getItem(token).get()).getRol();
-        if(rol != UserDto.Rol.ADMIN  && userDto.getRol() != rol) {
+        PersonaEinaDto.Rol rol = ((SessionInfo) Cache.getItem(token).get()).getRol();
+        if(rol != PersonaEinaDto.Rol.ADMIN  && personaEinaDto.getRol() != rol) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        BrokerResponse response = messageBroker.updateUserByID(id, userDto);
+        BrokerResponse response = messageBroker.updateUserByID(id, personaEinaDto);
 
         return ResponseEntity.status(response.getStatus()).build();
     }

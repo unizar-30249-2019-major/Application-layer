@@ -3,7 +3,7 @@ package com.major.aplicacion.controller;
 import com.major.aplicacion.Session.Cache;
 import com.major.aplicacion.Session.SessionInfo;
 import com.major.aplicacion.dtos.SpaceInfoDto;
-import com.major.aplicacion.dtos.UserDto;
+import com.major.aplicacion.dtos.PersonaEinaDto;
 import com.major.aplicacion.messages.BrokerResponse;
 import com.major.aplicacion.messages.MessageBroker;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class SpaceController {
     private static Logger logger = LoggerFactory.getLogger(SpaceController.class);
 
     private Boolean isAdmin(String token) {
-        return token != null && Cache.getItem(token).isPresent() && ((SessionInfo) Cache.getItem(token).get()).getRol() == UserDto.Rol.ADMIN;
+        return token != null && Cache.getItem(token).isPresent() && ((SessionInfo) Cache.getItem(token).get()).getRol() == PersonaEinaDto.Rol.ADMIN;
     }
 
     @RequestMapping(value = "/spaces", method = RequestMethod.GET)

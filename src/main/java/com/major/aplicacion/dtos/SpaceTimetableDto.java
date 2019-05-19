@@ -1,9 +1,9 @@
 package com.major.aplicacion.dtos;
 
-public class SpaceHorarioDto {
+public class SpaceTimetableDto {
 
-    Period period;
-    String state;
+    private Period period;
+    private String state;
 
     public Period getPeriod() {
         return period;

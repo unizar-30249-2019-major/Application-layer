@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDto {
+public class PersonaEinaDto {
 
     public enum Rol {
         ESTUDIANTE, PDI, ADMIN

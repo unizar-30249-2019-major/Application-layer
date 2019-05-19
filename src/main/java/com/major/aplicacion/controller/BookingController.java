@@ -3,9 +3,9 @@ package com.major.aplicacion.controller;
 import com.major.aplicacion.Session.Cache;
 import com.major.aplicacion.Session.SessionInfo;
 import com.major.aplicacion.dtos.BookingDto;
-import com.major.aplicacion.dtos.Bookingcsv;
+import com.major.aplicacion.dtos.BookingCsv;
 import com.major.aplicacion.dtos.Period;
-import com.major.aplicacion.dtos.UserDto;
+import com.major.aplicacion.dtos.PersonaEinaDto;
 import com.major.aplicacion.messages.BrokerResponse;
 import com.major.aplicacion.messages.MessageBroker;
 import org.slf4j.Logger;
@@ -28,15 +28,15 @@ public class BookingController {
     private static Logger logger = LoggerFactory.getLogger(BookingController.class);
 
     private Boolean isStudent(String token) {
-        return token != null && Cache.getItem(token).isPresent() && ((SessionInfo) Cache.getItem(token).get()).getRol() == UserDto.Rol.ESTUDIANTE;
+        return token != null && Cache.getItem(token).isPresent() && ((SessionInfo) Cache.getItem(token).get()).getRol() == PersonaEinaDto.Rol.ESTUDIANTE;
     }
 
     private Boolean isPdi(String token) {
-        return token != null && Cache.getItem(token).isPresent() && ((SessionInfo) Cache.getItem(token).get()).getRol() == UserDto.Rol.PDI;
+        return token != null && Cache.getItem(token).isPresent() && ((SessionInfo) Cache.getItem(token).get()).getRol() == PersonaEinaDto.Rol.PDI;
     }
 
     private Boolean isAdmin(String token) {
-        return token != null && Cache.getItem(token).isPresent() && ((SessionInfo) Cache.getItem(token).get()).getRol() == UserDto.Rol.ADMIN;
+        return token != null && Cache.getItem(token).isPresent() && ((SessionInfo) Cache.getItem(token).get()).getRol() == PersonaEinaDto.Rol.ADMIN;
     }
 
     private long getSessionUserID(String token) {
@@ -224,7 +224,7 @@ public class BookingController {
         }
 
         List<String> errors = new ArrayList<>();
-        Map<Integer, Bookingcsv> entries = new HashMap<>();
+        Map<Integer, BookingCsv> entries = new HashMap<>();
 
         try {
             String line;
@@ -240,10 +240,10 @@ public class BookingController {
 
                 try{
                     if(entries.containsKey(Integer.parseInt(columns[0]))){
-                        Bookingcsv aux = entries.get(Integer.parseInt(columns[0]));
+                        BookingCsv aux = entries.get(Integer.parseInt(columns[0]));
                         aux.addPeriod(new Period(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(columns[2]), new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(columns[3])));
                     } else {
-                        Bookingcsv aux = new Bookingcsv(columns[1]);
+                        BookingCsv aux = new BookingCsv(columns[1]);
                         aux.addPeriod(new Period(new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(columns[2]), new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(columns[3])));
                         for(String space : columns[4].split(",")) {
                             aux.addSpace(Integer.parseInt(space));
