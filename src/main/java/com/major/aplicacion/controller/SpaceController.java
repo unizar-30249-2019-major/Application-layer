@@ -63,7 +63,7 @@ public class SpaceController {
     }
 
     @RequestMapping(value = "/space/{id}", method = RequestMethod.PUT)
-    public ResponseEntity putSpaceById(@CookieValue(value = "token", required = false) String token, @PathVariable long id, SpaceInfoDto spaceInfoDto) throws IOException {
+    public ResponseEntity putSpaceById(@CookieValue(value = "token", required = false) String token, @PathVariable long id, @RequestBody SpaceInfoDto spaceInfoDto) throws IOException {
         logger.info("GET\t/space/{id} request received");
 
         if (token == null || !Cache.containsToken(token) || !isAdmin(token)) {

@@ -243,7 +243,7 @@ public class MessageBroker {
     }
 
     public BrokerResponse processCSV(long id, Map<Integer, BookingCsv> entries) throws IOException {
-        int status = 200;
+        int status = 201;
         for(Map.Entry<Integer, BookingCsv> entry : entries.entrySet()) {
             BookingCsv value = entry.getValue();
             String message = messageBuilder("createCSVBooking", new String[]{Long.toString(id), new ObjectMapper().writeValueAsString(value)});
