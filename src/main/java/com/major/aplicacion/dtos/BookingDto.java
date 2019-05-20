@@ -1,21 +1,20 @@
 package com.major.aplicacion.dtos;
 
-import java.util.Collection;
+
 import java.util.Date;
 import java.util.List;
 
-public class BookingDtoReturn {
+
+public class BookingDto {
+
+
     private long id;
 
     private boolean isPeriodic;
 
     private String reason;
 
-    private List<Period> period;
-
-    private String state;
-
-    private boolean active;
+    private Period period;
 
     private String periodRep;
 
@@ -25,6 +24,7 @@ public class BookingDtoReturn {
 
     private List<Integer> spaces;
 
+
     public long getId() {
         return id;
     }
@@ -33,7 +33,7 @@ public class BookingDtoReturn {
         this.id = id;
     }
 
-    public boolean getIsPeriodic() {
+    public boolean isIsPeriodic() {
         return isPeriodic;
     }
 
@@ -49,11 +49,11 @@ public class BookingDtoReturn {
         this.reason = reason;
     }
 
-    public Collection<Period> getPeriod() {
+    public Period getPeriod() {
         return period;
     }
 
-    public void setPeriod(List<Period> period) {
+    public void setPeriod(Period period) {
         this.period=period;
     }
 
@@ -73,20 +73,12 @@ public class BookingDtoReturn {
         this.finalDate = finalDate;
     }
 
-    public String getState() {
-        return state;
+    public boolean isEspecial() {
+        return especial;
     }
 
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setEspecial(boolean especial) {
+        especial = especial;
     }
 
     public List<Integer> getSpaces() {
@@ -95,13 +87,5 @@ public class BookingDtoReturn {
 
     public void setSpaces(List<Integer> spaces) {
         this.spaces = spaces;
-    }
-
-    public boolean isEspecial() {
-        return especial;
-    }
-
-    public void setEspecial(boolean especial) {
-        this.especial = especial;
     }
 }
